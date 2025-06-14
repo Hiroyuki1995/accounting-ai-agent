@@ -1,0 +1,39 @@
+.header {
+  background-color: #f0f0f0; /* 例: 薄いグレーの背景 */
+  padding: 1rem 0;
+  border-bottom: 1px solid #ccc; /* 例: ページ下部に細い線 */
+  position: fixed; /* ヘッダーを固定 */
+  top: 0; /* 上端に配置 */
+  left: 0; /* 左端に配置 */
+  right: 0; /* 右端に配置 */
+  z-index: 1000; /* 他の要素より前面に表示 */
+  height: 4rem; /* ヘッダーの高さを固定 */
+  display: flex; /* コンテンツを中央に配置しやすく */
+  align-items: center; /* 垂直方向中央揃え */
+}
+
+.container {
+  max-width: 1200px; /* コンテンツの最大幅 */
+  margin: 0 auto; /* 中央寄せ */
+  padding: 0 1rem; /* 左右に余白 */
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333; /* 例: 濃いグレーの文字色 */
+}
+
+/* レスポンシブ対応の例 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .logo {
+    margin-bottom: 0.5rem;
+  }
+} 

@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin"]
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id          Int      @id @default(autoincrement())
+  file_name   String
+  uploaded_at DateTime @default(now())
+  status      String
+  object_key   String?
+  
+  // Gemini APIから抽出される項目
+  issuer_name       String? @map("issuer_name")
+  invoice_date      DateTime? @map("invoice_date") @db.Date
+  registration_number String? @map("registration_number")
+  tax_8_base        BigInt? @map("tax_8_base")
+  tax_8_amount      BigInt? @map("tax_8_amount")
+  tax_8_total       BigInt? @map("tax_8_total")
+  tax_10_base       BigInt? @map("tax_10_base")
+  tax_10_amount     BigInt? @map("tax_10_amount")
+  tax_10_total      BigInt? @map("tax_10_total")
+  total_amount      BigInt? @map("total_amount")
+
+  @@map("files")
+}

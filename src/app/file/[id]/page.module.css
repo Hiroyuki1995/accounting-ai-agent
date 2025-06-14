@@ -1,0 +1,188 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.contentArea {
+  display: flex;
+  /* gap: 40px; */ /* スプリッターで間隔を管理するため削除 */
+  height: calc(100vh - 100px); /* ヘッダーなどを考慮した高さ */
+}
+
+.pdfPreview {
+  /* flex: 1; */ /* 幅はJavaScriptで制御するため削除 */
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  overflow: auto; /* コンテンツがはみ出さないようにスクロール可能にする */
+  box-sizing: border-box;
+}
+
+.pdfPreview h2,
+.inputForm h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.inputForm {
+  /* flex: 2; */ /* 幅はJavaScriptで制御するため削除 */
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  /* max-width: 600px; */
+  overflow: auto; /* コンテンツがはみ出さないようにスクロール可能にする */
+  box-sizing: border-box;
+}
+
+.splitter {
+  width: 8px;
+  cursor: col-resize;
+  background-color: #ccc;
+  border-left: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  flex-shrink: 0; /* スプリッターが縮まないようにする */
+}
+
+.noSelect {
+  user-select: none; /* ドラッグ中にテキストが選択されないようにする */
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* paddingを幅に含める */
+}
+
+.confirmButton {
+  display: block; /* ボタンをブロック要素にする */
+  width: 100%; /* 幅いっぱいにする */
+  padding: 10px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.confirmButton:hover {
+  background-color: #0050bb;
+}
+
+.taxGroup {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.taxGroup h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.taxInputs {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap; /* 小さい画面で折り返す */
+}
+
+.formGroupInline {
+  flex: 1;
+  min-width: 120px; /* 最小幅を設定 */
+}
+
+.inputFieldSmall {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.errorText {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .contentArea {
+    flex-direction: column;
+    height: auto; /* モバイルでは高さ固定を解除 */
+  }
+
+  .pdfPreview,
+  .inputForm {
+    flex: none;
+    width: 100%;
+    max-width: unset;
+  }
+
+  .splitter {
+    width: 100%;
+    height: 8px;
+    cursor: row-resize;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .taxInputs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .formGroupInline {
+    min-width: unset;
+  }
+
+  .inlineFormGroupContainer {
+    flex-direction: column;
+    gap: 10px;
+    flex-wrap: wrap; /* スマートフォンで折り返す */
+  }
+
+  .formGroupInlineWide {
+    flex: 0 0 auto;
+    min-width: unset;
+  }
+}
+
+.inlineFormGroupContainer {
+  display: flex;
+  gap: 15px; /* 要素間のギャップを調整 */
+  margin-bottom: 15px;
+  flex-wrap: nowrap; /* 通常時は折り返さない */
+}
+
+.formGroupInlineWide {
+  flex: 0 0 calc(50% - 7.5px); /* 2カラムで表示するための幅を正確に計算 */
+  min-width: 200px; /* 各入力フィールドの最小幅を設定 */
+  display: flex;
+  flex-direction: column;
+} 
