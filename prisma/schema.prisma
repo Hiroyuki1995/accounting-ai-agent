@@ -15,6 +15,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN // 管理者権限
+  STAFF // 担当者権限
+}
+
 model File {
   id          Int      @id @default(autoincrement())
   file_name   String
@@ -35,4 +40,13 @@ model File {
   total_amount      BigInt? @map("total_amount")
 
   @@map("files")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  department String
+  role       UserRole // ADMIN:管理者権限, STAFF:担当者権限
+  created_at DateTime @default(now())
 }

@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: 会計AIエージェント API
+  version: 1.0.0
+  description: 会計AIエージェントのAPI仕様
+
+servers:
+  - url: /api
+    description: APIのベースURL
+
+paths:
+  /files:
+    get:
+      summary: ファイル一覧の取得
+      description: アップロードされたファイルの一覧を取得します
+      responses:
+        "200":
+          description: ファイル一覧の取得に成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /files/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ファイルID
+    get:
+      summary: ファイル詳細の取得
+      description: 指定されたIDのファイルの詳細情報を取得します
+      responses:
+        "200":
+          description: ファイル詳細の取得に成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          description: 無効なファイルID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: ファイルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: ファイル情報の更新
+      description: 指定されたIDのファイルの情報を更新します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFileRequest"
+      responses:
+        "200":
+          description: ファイル情報の更新に成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          description: 無効なファイルID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: ファイルが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /upload:
+    post:
+      summary: ファイルのアップロード
+      description: PDFファイルをアップロードし、処理を開始します
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: アップロードするPDFファイル
+      responses:
+        "200":
+          description: ファイルのアップロードに成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  files:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: 無効なリクエスト
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    File:
+      type: object
+      properties:
+        id:
+          type: integer
+        file_name:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [uploaded, 確認済み]
+        object_key:
+          type: string
+        issuer_name:
+          type: string
+          nullable: true
+        invoice_date:
+          type: string
+          format: date
+          nullable: true
+        registration_number:
+          type: string
+          nullable: true
+        tax_8_base:
+          type: string
+          nullable: true
+        tax_8_amount:
+          type: string
+          nullable: true
+        tax_8_total:
+          type: string
+          nullable: true
+        tax_10_base:
+          type: string
+          nullable: true
+        tax_10_amount:
+          type: string
+          nullable: true
+        tax_10_total:
+          type: string
+          nullable: true
+        total_amount:
+          type: string
+          nullable: true
+
+    UpdateFileRequest:
+      type: object
+      properties:
+        issuer_name:
+          type: string
+          nullable: true
+        invoice_date:
+          type: string
+          format: date
+          nullable: true
+        registration_number:
+          type: string
+          nullable: true
+        tax_8_base:
+          type: string
+          nullable: true
+        tax_8_amount:
+          type: string
+          nullable: true
+        tax_8_total:
+          type: string
+          nullable: true
+        tax_10_base:
+          type: string
+          nullable: true
+        tax_10_amount:
+          type: string
+          nullable: true
+        tax_10_total:
+          type: string
+          nullable: true
+        total_amount:
+          type: string
+          nullable: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

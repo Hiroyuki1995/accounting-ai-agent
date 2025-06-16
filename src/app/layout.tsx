@@ -1,5 +1,7 @@
+// 基本的にページ共通のレイアウトを定義
 import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
+import SideMenu from '@/components/SideMenu';
 import ThemeRegistry from '@/components/ThemeRegistry';
 import "./globals.css";
 
@@ -26,7 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={``}>
-        <ThemeRegistry>{children}</ThemeRegistry>
+        <ThemeRegistry>
+          <div style={{ display: 'flex' }}>
+            <SideMenu />
+            <main style={{ flexGrow: 1 }}>
+              {children}
+            </main>
+          </div>
+        </ThemeRegistry>
       </body>
     </html>
   );
