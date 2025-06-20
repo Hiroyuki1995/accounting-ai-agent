@@ -68,12 +68,12 @@ export default function FileListPage() {
 
       } else {
         console.error('Failed to fetch files');
-        // alert('ファイル一覧の取得に失敗しました。'); // MUIで表示するためアラートを削除
+        alert('ファイル一覧の取得に失敗しました。');
         setProcessedFiles([]);
       }
     } catch (error) {
       console.error('Error fetching files:', error);
-      // alert('ファイル一覧の取得中にエラーが発生しました。'); // MUIで表示するためアラートを削除
+      alert('ファイル一覧の取得中にエラーが発生しました。');
       setProcessedFiles([]);
     } finally {
       setLoading(false);

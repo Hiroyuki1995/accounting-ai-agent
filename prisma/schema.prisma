@@ -50,3 +50,14 @@ model User {
   role       UserRole // ADMIN:管理者権限, STAFF:担当者権限
   created_at DateTime @default(now())
 }
+
+model Account {
+  id         Int    @id @default(autoincrement())
+  alias      String
+  bank       String
+  branch     String
+  type       String
+  number     String
+  holder     String
+  created_at DateTime @default(now())
+}

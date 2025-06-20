@@ -29,6 +29,7 @@ if (!geminiApiKey) {
 const worker = new Worker(
   'fileProcessingQueue', // キュー名
   async (job: Job) => {
+    try {
     const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
     // ファイルIDを取得
@@ -125,8 +126,9 @@ const worker = new Worker(
     const json = JSON.parse(response.text || '{}');
     console.log(json);
 
+
     // ファイルステータスを「要確認」に更新し、抽出結果を保存
-    try {
+
       await prisma.file.update({
         where: { id: fileId },
         data: {
@@ -145,7 +147,7 @@ const worker = new Worker(
       });
       console.log(`File ID ${fileId} status updated to '要確認' and data saved.`);
     } catch (error) {
-      console.error(`Failed to update status for file ID ${fileId}:`, error);
+      console.error(error);
       // エラー処理 (リトライなど BullMQの機能で可能)
       throw error; // ジョブをFailed状態にする
     }

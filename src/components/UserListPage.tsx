@@ -92,6 +92,7 @@ export default function UserListPage() {
   const handleDelete = async () => {
     if (selectedIds.length === 0) return;
     if (users.length - selectedIds.length < 1) {
+      // errorsnackbarでエラー画面表示
       alert('全てのユーザーを削除することはできません');
       return;
     }

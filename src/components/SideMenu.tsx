@@ -29,6 +29,11 @@ const menuItems = [
     icon: <PeopleIcon />,
     href: '/user',
   },
+  {
+    text: '自社口座設定',
+    icon: <DescriptionIcon />,
+    href: '/account-settings',
+  },
 ];
 
 export default function SideMenu() {

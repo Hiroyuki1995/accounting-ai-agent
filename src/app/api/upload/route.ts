@@ -29,6 +29,7 @@ async function ensureBucketExists(bucketName: string) {
     // 存在する場合はエラーになるが無視できる
     await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
   } catch (error: unknown) {
+    console.error(error)
     // unknown型のエラーからメッセージを取得するには型ガードが必要
     if (error instanceof Error) {
       console.error('Error ensuring bucket exists (may be expected if bucket already exists):', error.message);

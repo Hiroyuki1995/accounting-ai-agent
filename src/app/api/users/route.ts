@@ -9,6 +9,7 @@ export async function GET() {
     });
     return NextResponse.json(users);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'ユーザー一覧の取得に失敗しました' }, { status: 500 });
   }
 }
