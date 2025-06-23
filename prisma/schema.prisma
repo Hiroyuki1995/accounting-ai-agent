@@ -61,3 +61,94 @@ model Account {
   holder     String
   created_at DateTime @default(now())
 }
+
+model Partner {
+  id                          Int       @id @default(autoincrement())
+  displayName                 String    // 表示用名称
+  officialName                String?   // 正式名称をオプショナルに変更
+  ocrName                     String    // OCR取引先名
+  companyNameKana             String?
+  corporateNumber             String?   @db.VarChar(13) // 一意制約なし
+  invoiceRegistrationNumber   String?   @db.VarChar(14) // 一意制約なし
+  corporateType               CorporateType?
+  address                     String?
+  closingDate                 Int?
+  feeType                     FeeType?
+  bankAccounts                BankAccount[]
+}
+
+enum CorporateType {
+  CORPORATION
+  INDIVIDUAL
+  UNSPECIFIED
+}
+
+enum FeeType {
+  OURS
+  THEIRS
+}
+
+model BankAccount {
+  id          Int      @id @default(autoincrement())
+  bankName    String
+  branchName  String
+  accountType String
+  accountNumber String
+  accountHolder String
+  partnerId   Int
+  Partner     Partner  @relation(fields: [partnerId], references: [id])
+}
+
+// インボイス番号検索のデータベース
+model Corporation {
+  id                      Int      @id @default(autoincrement())
+  sequenceNumber          Int
+  registratedNumber       String   @db.VarChar(14) // 登録番号
+  process                 Int?      // 事業者処理区分
+  correct                 Int?      // 訂正区分
+  kind                    Int?      // 人格区分
+  country                 Int?      // 国内外区分
+  latest                  Int?      // 最新履歴
+  registrationDate        DateTime // 登録年月日
+  updateDate              DateTime // 更新年月日
+  disposalDate            DateTime? // 取消年月日
+  expireDate              DateTime? // 失効年月日
+  address                 String?   @db.VarChar(600) // 所在地（法人）
+  addressPrefectureCode   Int?      // 所在地都道府県コード（法人）
+  addressCityCode         Int?      // 所在地市区町村コード（法人）
+}
+
+// 法人番号検索のデータベース
+model CorporationNumberInfo {
+  id                      Int      @id @default(autoincrement())
+  sequenceNumber          Int      // 一連番号
+  corporateNumber         String   @unique // 法人番号
+  process                 Int      // 処理区分
+  correct                 Int      // 訂正区分
+  updateDate              DateTime // 更新年月日
+  changeDate              DateTime? // 変更年月日
+  name                    String   // 商号又は名称
+  nameImageId             String?  // 商号又は名称イメージID
+  kind                    Int      // 法人種別
+  prefectureName          String   // 国内所在地（都道府県）
+  cityName                String   // 国内所在地（市区町村）
+  streetNumber            String   // 国内所在地（丁目番地等）
+  addressImageId          String?  // 国内所在地イメージID
+  prefectureCode          Int      // 都道府県コード
+  cityCode                Int      // 市区町村コード
+  postCode                String   // 郵便番号
+  addressOutside          String?  // 国外所在地
+  addressOutsideImageId   String?  // 国外所在地イメージID
+  closeDate               DateTime? // 登記記録の閉鎖等年月日
+  closeCause              String?  // 登記記録の閉鎖等の事由
+  successorCorporateNumber String? // 承継先法人番号
+  changeCause             String?  // 変更事由の詳細
+  assignmentDate          DateTime // 法人番号指定年月日
+  latest                  Int      // 最新履歴
+  enName                  String?  // 商号又は名称（英語表記）
+  enPrefectureName        String?  // 国内所在地（都道府県）（英語表記）
+  enCityName              String?  // 国内所在地（市区町村丁目番地等）（英語表記）
+  enAddressOutside        String?  // 国外所在地（英語表記）
+  furigana                String?  // フリガナ
+  hihyoji                 Int      // 検索対象除外
+}

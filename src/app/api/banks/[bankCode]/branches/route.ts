@@ -1,0 +1,25 @@
+import { NextResponse } from 'next/server';
+
+export async function GET(req: Request, { params }: { params: { bankCode: string } }) {
+  const { bankCode } = params;
+
+  if (!bankCode) {
+    return NextResponse.json({ error: '銀行コードが指定されていません' }, { status: 400 });
+  }
+
+  try {
+    const apiKey = process.env.BANKCODEJP_API_KEY;
+    const limit = 2000;
+    const query = `apiKey=${apiKey}&limit=${limit}`;
+    const response = await fetch(`https://apis.bankcode-jp.com/v3/banks/${bankCode}/branches?${query}`);
+    if (!response.ok) {
+      console.error(response);
+      throw new Error('外部APIからのデータ取得に失敗しました');
+    }
+    const data = await response.json();
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'データの取得に失敗しました' }, { status: 500 });
+  }
+} 

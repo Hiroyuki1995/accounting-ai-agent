@@ -1,5 +1,6 @@
 'use client';
 
+import BusinessIcon from '@mui/icons-material/Business';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -33,6 +34,11 @@ const menuItems = [
     text: '自社口座設定',
     icon: <DescriptionIcon />,
     href: '/account-settings',
+  },
+  {
+    text: '取引先管理',
+    icon: <BusinessIcon />,
+    href: '/partners',
   },
 ];
 
