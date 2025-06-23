@@ -2,18 +2,13 @@
 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { UserItem, UserUpdateInfo } from './UserListPage';
 
 interface UserEditDialogProps {
   open: boolean;
   onClose: () => void;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    department: string;
-    role: 'ADMIN' | 'STAFF';
-  } | null;
-  onUpdate: (user: { id: number; name: string; email: string; department: string; role: 'ADMIN' | 'STAFF' }) => void;
+  user: UserItem | null;
+  onUpdate: (user: UserUpdateInfo) => void;
 }
 
 export default function UserEditDialog({ open, onClose, user, onUpdate }: UserEditDialogProps) {
@@ -30,8 +25,8 @@ export default function UserEditDialog({ open, onClose, user, onUpdate }: UserEd
     if (user) {
       setName(user.name);
       setEmail(user.email);
-      setDepartment(user.department);
-      setRole(user.role);
+      setDepartment(user.app_metadata?.department || '');
+      setRole(user.app_metadata?.role as 'ADMIN' | 'STAFF');
     }
   }, [user, open]);
 
@@ -58,7 +53,7 @@ export default function UserEditDialog({ open, onClose, user, onUpdate }: UserEd
       hasError = true;
     }
     if (hasError || !user) return;
-    onUpdate({ id: user.id, name, email, department, role });
+    onUpdate({ ...user, name, email, app_metadata: { ...user.app_metadata, department, role } });
     onClose();
   };
 

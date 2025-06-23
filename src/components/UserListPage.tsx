@@ -3,15 +3,79 @@
 import { Box, Button, Checkbox, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import UserEditDialog from './UserEditDialog';
-import UserRegisterDialog from './UserRegisterDialog';
+// import UserRegisterDialog from './UserRegisterDialog';
 
-// ユーザー情報の型
-interface UserItem {
-  id: number;
-  name: string;
+// ユーザー参照情報の型
+export interface UserItem {
   email: string;
-  department: string;
-  role: 'ADMIN' | 'STAFF';
+  picture: string;
+  email_verified: boolean;
+  user_id: string;
+  nickname: string;
+  updated_at: string;
+  user_metadata: Record<string, any>;
+  identities: {
+    connection: string;
+    user_id: string;
+    provider: string;
+    isSocial: boolean;
+  }[];
+  name: string;
+  created_at: string;
+  last_login: string;
+  last_ip: string;
+  logins_count: number;
+  app_metadata: {
+    org_id: string;
+    department: string;
+    role: string;
+  };
+  blocked: boolean;
+  phone_number: string;
+  phone_verified: boolean;
+  given_name: string;
+  family_name: string;
+  verify_email: boolean;
+  verify_phone_number: boolean;
+  password: string;
+  verify_password: boolean;
+  username: string;
+}
+
+// ユーザー登録・更新情報の型
+export interface UserUpdateInfo {
+  email: string;
+  phone_number?: string;
+  user_metadata?: Record<string, any>;
+  blocked?: boolean;
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  app_metadata?: Record<string, any>;
+  given_name?: string;
+  family_name?: string;
+  name: string;
+  nickname?: string;
+  picture?: string;
+  user_id?: string;
+  connection?: string;
+  password?: string;
+  verify_email?: boolean;
+  username?: string;
+  verify_phone_number?: boolean;
+  verify_password?: boolean;
+}
+
+function mapUserItemToUpdateInfo(user: UserItem): UserUpdateInfo {
+  return {
+    email: user.email,
+    name: user.name,
+    username: user.username,
+    // 必要に応じて他の共有属性をここに追加
+    app_metadata: {
+      department: user.app_metadata?.department || '',
+      role: user.app_metadata?.role || '',
+    },
+  };
 }
 
 export default function UserListPage() {
@@ -20,7 +84,7 @@ export default function UserListPage() {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // ユーザー一覧をAPIから取得
   const fetchUsers = async () => {
@@ -45,7 +109,7 @@ export default function UserListPage() {
   }, []);
 
   // 新規登録時はAPI経由で追加
-  const handleRegister = async (user: Omit<UserItem, 'id'>) => {
+  const handleRegister = async (user: Omit<UserItem, 'user_id'>) => {
     try {
       const res = await fetch('/api/users', {
         method: 'POST',
@@ -63,12 +127,13 @@ export default function UserListPage() {
     setEditOpen(true);
   };
 
-  const handleUpdate = async (user: UserItem) => {
+  const handleUpdate = async (user: UserUpdateInfo) => {
+    const updateInfo = mapUserItemToUpdateInfo(user as UserItem);
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch(`/api/users/${user.user_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
+        body: JSON.stringify(updateInfo),
       });
       if (res.ok) {
         await fetchUsers();
@@ -77,13 +142,13 @@ export default function UserListPage() {
     setEditOpen(false);
   };
 
-  const handleSelect = (id: number) => {
+  const handleSelect = (id: string) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(users.map(u => u.id));
+      setSelectedIds(users.map(u => u.user_id));
     } else {
       setSelectedIds([]);
     }
@@ -145,6 +210,7 @@ export default function UserListPage() {
                 <TableCell>メールアドレス</TableCell>
                 <TableCell>部署</TableCell>
                 <TableCell>権限</TableCell>
+                <TableCell>最終ログイン日時</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -165,14 +231,15 @@ export default function UserListPage() {
                 </TableRow>
               ) : (
                 users.map((user) => (
-                  <TableRow key={user.id} hover style={{ cursor: 'pointer' }} onClick={() => handleRowClick(user)}>
-                    <TableCell padding="checkbox" onClick={e => { e.stopPropagation(); handleSelect(user.id); }}>
-                      <Checkbox checked={selectedIds.includes(user.id)} />
+                  <TableRow key={user.user_id} hover style={{ cursor: 'pointer' }} onClick={() => handleRowClick(user)}>
+                    <TableCell padding="checkbox" onClick={e => { e.stopPropagation(); handleSelect(user.user_id); }}>
+                      <Checkbox checked={selectedIds.includes(user.user_id)} />
                     </TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.department}</TableCell>
-                    <TableCell>{user.role === 'ADMIN' ? '管理者権限' : user.role === 'STAFF' ? '担当者権限' : ''}</TableCell>
+                    <TableCell>{user.app_metadata.department}</TableCell>
+                    <TableCell>{user.app_metadata.role}</TableCell>
+                    <TableCell>{user.last_login}</TableCell>
                   </TableRow>
                 ))
               )}
@@ -180,11 +247,11 @@ export default function UserListPage() {
           </Table>
         </TableContainer>
       </Paper>
-      <UserRegisterDialog
+      {/* <UserRegisterDialog
         open={registerOpen}
         onClose={() => setRegisterOpen(false)}
         onRegister={handleRegister}
-      />
+      /> */}
       <UserEditDialog
         open={editOpen}
         onClose={() => setEditOpen(false)}
