@@ -50,7 +50,7 @@ export default function SideMenu() {
   };
 
   const handleLogout = () => {
-    window.location.href = '/login';
+    window.location.href = '/auth/logout';
   };
 
   return (

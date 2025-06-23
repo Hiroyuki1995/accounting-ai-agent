@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -15,12 +16,17 @@ interface UpdateFileBody {
   total_amount?: string | null;
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export const GET = orgIdMiddleware(async (req: Request) => {
+  const url = new URL(req.url);
+  const pathSegments = url.pathname.split('/');
+  const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
+  console.log('id', id);
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
   try {
-    const fileId = parseInt(params.id, 10);
+    const fileId = parseInt(id, 10);
 
     if (isNaN(fileId)) {
         return NextResponse.json(
@@ -67,14 +73,18 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export const PUT = orgIdMiddleware(async (req: Request) => {
+  const url = new URL(req.url);
+  const pathSegments = url.pathname.split('/');
+  const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
+  console.log('id', id);
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
   try {
-    const fileId = parseInt(params.id, 10);
+    const fileId = parseInt(id, 10);
     if (isNaN(fileId)) {
       return NextResponse.json(
         { error: '無効なファイルIDです。' },
@@ -82,7 +92,7 @@ export async function PUT(
       );
     }
 
-    const body: UpdateFileBody = await request.json();
+    const body: UpdateFileBody = await req.json();
 
     // 更新対象のフィールドを抽出
     const updateData: Prisma.FileUpdateInput = {
@@ -139,4 +149,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-} 
+});

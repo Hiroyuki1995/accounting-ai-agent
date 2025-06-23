@@ -1,5 +1,4 @@
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import AccountRegisterDialog from './AccountRegisterDialog';
 
@@ -18,8 +17,14 @@ export default function AccountListPage() {
 
   const fetchAccounts = async () => {
     try {
-      const response = await axios.get('/api/accounts');
-      setAccounts(response.data);
+      const response = await fetch('/api/accounts', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setAccounts(data);
     } catch (error) {
       console.error('Error fetching accounts:', error);
     }

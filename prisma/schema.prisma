@@ -26,6 +26,7 @@ model File {
   uploaded_at DateTime @default(now())
   status      String
   object_key   String?
+  orgId       String   // 組織ID
   
   // Gemini APIから抽出される項目
   issuer_name       String? @map("issuer_name")
@@ -49,6 +50,7 @@ model User {
   department String
   role       UserRole // ADMIN:管理者権限, STAFF:担当者権限
   created_at DateTime @default(now())
+  orgId      String   // 組織ID
 }
 
 model Account {
@@ -60,6 +62,7 @@ model Account {
   number     String
   holder     String
   created_at DateTime @default(now())
+  orgId      String   // 組織ID
 }
 
 model Partner {
@@ -75,6 +78,7 @@ model Partner {
   closingDate                 Int?
   feeType                     FeeType?
   bankAccounts                BankAccount[]
+  orgId                       String    // 組織ID
 }
 
 enum CorporateType {
@@ -97,6 +101,7 @@ model BankAccount {
   accountHolder String
   partnerId   Int
   Partner     Partner  @relation(fields: [partnerId], references: [id])
+  orgId       String   // 組織ID
 }
 
 // インボイス番号検索のデータベース

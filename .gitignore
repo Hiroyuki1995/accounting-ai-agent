@@ -45,3 +45,4 @@ next-env.d.ts
 /minio-local-data
 /postgres-data
 /redis-data
+/prisma/migration_master_data

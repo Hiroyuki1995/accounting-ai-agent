@@ -1,17 +1,20 @@
+import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
+export const POST = orgIdMiddleware(async (request: Request) => {
   try {
     const { partnerData, bankAccounts } = await request.json();
+    const orgId = (request as any).orgId;
     console.log(partnerData);
     console.log(bankAccounts);
 
     const partner = await prisma.partner.create({
       data: {
         ...partnerData,
+        orgId: orgId,
         bankAccounts: {
           create: bankAccounts,
         },
@@ -23,11 +26,13 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json({ error: '取引先の登録に失敗しました' }, { status: 500 });
   }
-}
+});
 
-export async function GET(request: Request) {
+export const GET = orgIdMiddleware(async (request: Request) => {
+  const orgId = (request as any).orgId;
   try {
     const partners = await prisma.partner.findMany({
+      where: { orgId },
       include: {
         bankAccounts: true,
       },
@@ -37,4 +42,4 @@ export async function GET(request: Request) {
     console.error(error);
     return NextResponse.json({ error: '取引先データの取得に失敗しました' }, { status: 500 });
   }
-} 
+});

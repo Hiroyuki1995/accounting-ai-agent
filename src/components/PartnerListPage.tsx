@@ -15,31 +15,9 @@ interface Partner {
   corporateType: string;
 }
 
-const mockPartners: Partner[] = [
-  {
-    id: 1,
-    displayName: '株式会社サンプル',
-    officialName: '株式会社サンプル',
-    ocrName: 'カブシキガイシャサンプル',
-    companyNameKana: 'カブシキガイシャサンプル',
-    corporateNumber: '1234567890123',
-    invoiceRegistrationNumber: 'T1234567890123',
-    corporateType: 'CORPORATION',
-  },
-  {
-    id: 2,
-    displayName: 'サンプル合同会社',
-    officialName: 'サンプル合同会社',
-    ocrName: 'サンプルゴウドウガイシャ',
-    companyNameKana: 'サンプルゴウドウガイシャ',
-    corporateNumber: '9876543210987',
-    invoiceRegistrationNumber: 'T9876543210987',
-    corporateType: 'CORPORATION',
-  },
-];
 
 export default function PartnerListPage() {
-  const [partners, setPartners] = useState<Partner[]>(mockPartners);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleDialogOpen = () => {
@@ -92,7 +70,7 @@ export default function PartnerListPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {partners.map((partner) => (
+              {partners.map((partner: Partner) => (
                 <TableRow key={partner.id}>
                   <TableCell>{partner.displayName}</TableCell>
                   <TableCell>{partner.officialName}</TableCell>

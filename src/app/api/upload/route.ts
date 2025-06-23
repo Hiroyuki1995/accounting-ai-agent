@@ -4,6 +4,7 @@ import { addFileProcessingJob } from '@/lib/queue';
 // import { writeFile } from 'fs/promises'; // ローカルファイル保存は不要になるため削除
 import { NextResponse } from 'next/server';
 // import { join } from 'path'; // ローカルファイル保存は不要になるため削除
+import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { CreateBucketCommand, ListBucketsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'; // S3クライアントをインポート
 import { v4 as uuidv4 } from 'uuid'; // uuidv4をインポート
 
@@ -39,10 +40,12 @@ async function ensureBucketExists(bucketName: string) {
   }
 }
 
-export async function POST(request: Request) {
+export const POST = orgIdMiddleware(async (request: Request) => {
   try {
     // バケットの存在を確認・作成
     await ensureBucketExists(MINIO_BUCKET_NAME);
+    const orgId = (request as any).orgId;
+    console.log('orgId', orgId);
 
     const formData = await request.formData();
     const files = formData.getAll('file') as File[];
@@ -93,6 +96,7 @@ export async function POST(request: Request) {
           file_name: fileName, // ファイル名は元の名前をDBに保存
           object_key: objectKey, // MinIOでのパスをDBに保存 (file_pathから変更)
           status: 'uploaded', // 初期ステータス
+          orgId: orgId,
         }
       });
 
@@ -117,4 +121,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+});

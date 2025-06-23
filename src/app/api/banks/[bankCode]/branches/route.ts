@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { bankCode: string } }) {
-  const { bankCode } = params;
+export async function GET(req: Request,context: any) {
+  const bankCode = context.params.bankCode;
+  console.log('bankCode', bankCode);
 
   if (!bankCode) {
     return NextResponse.json({ error: '銀行コードが指定されていません' }, { status: 400 });

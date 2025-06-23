@@ -152,14 +152,16 @@ export default function FileListPage() {
         const fileId = params.row.id;
         return fileId && typeof fileId === 'number' ? (
           <Link href={`/file/${fileId}`} passHref>
-            <Typography component="a" sx={{
-              color: 'primary.main',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-              whiteSpace: 'normal',
-              overflowWrap: 'break-word',
-              wordBreak: 'break-all',
-            }}>
+            <Typography
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+                whiteSpace: 'normal',
+                overflowWrap: 'break-word',
+                wordBreak: 'break-all',
+              }}
+            >
               {params.value}
             </Typography>
           </Link>

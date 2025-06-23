@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server';
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
-    const userId = Number(params.id);
-    if (isNaN(userId)) {
+    const { id } = params;
+    if (!id || isNaN(Number(id))) {
       return NextResponse.json({ error: '不正なIDです' }, { status: 400 });
     }
+
+    const userId = Number(id);
     const body = await req.json();
     const { name, email, department, role } = body;
     if (!name || !email || !department || !role) {
@@ -21,7 +23,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     });
     return NextResponse.json(updated);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return NextResponse.json({ error: 'ユーザー更新に失敗しました' }, { status: 500 });
   }
-} 
+}
