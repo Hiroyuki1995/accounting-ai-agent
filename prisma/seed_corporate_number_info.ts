@@ -49,7 +49,6 @@ async function main() {
         }
       });
 
-      console.log('Data has been seeded');
       await prisma.$disconnect();
     }
 

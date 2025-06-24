@@ -1,15 +1,17 @@
-import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
+import { getUserData } from '@/lib/authSession';
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export const POST = orgIdMiddleware(async (request: Request) => {
+export async function POST(request: Request) {
   try {
     const { partnerData, bankAccounts } = await request.json();
-    const orgId = (request as any).orgId;
-    console.log(partnerData);
-    console.log(bankAccounts);
+    const userData = await getUserData();
+    const orgId = userData?.org_id;
+    if (!orgId) {
+      return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+    }
 
     const partner = await prisma.partner.create({
       data: {
@@ -26,10 +28,14 @@ export const POST = orgIdMiddleware(async (request: Request) => {
     console.error(error);
     return NextResponse.json({ error: '取引先の登録に失敗しました' }, { status: 500 });
   }
-});
+}
 
-export const GET = orgIdMiddleware(async (request: Request) => {
-  const orgId = (request as any).orgId;
+export async function GET(request: Request) {
+  const userData = await getUserData();
+  const orgId = userData?.org_id;
+  if (!orgId) {
+    return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+  }
   try {
     const partners = await prisma.partner.findMany({
       where: { orgId },
@@ -42,4 +48,4 @@ export const GET = orgIdMiddleware(async (request: Request) => {
     console.error(error);
     return NextResponse.json({ error: '取引先データの取得に失敗しました' }, { status: 500 });
   }
-});
+}

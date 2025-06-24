@@ -1,5 +1,4 @@
 import prisma from '@/lib/prisma';
-import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -16,11 +15,10 @@ interface UpdateFileBody {
   total_amount?: string | null;
 }
 
-export const GET = orgIdMiddleware(async (req: Request) => {
-  const url = new URL(req.url);
+export async function GET(request: Request) {
+  const url = new URL(request.url);
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
-  console.log('id', id);
 
   if (!id) {
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });
@@ -73,13 +71,12 @@ export const GET = orgIdMiddleware(async (req: Request) => {
       { status: 500 }
     );
   }
-});
+}
 
-export const PUT = orgIdMiddleware(async (req: Request) => {
-  const url = new URL(req.url);
+export async function PUT(request: Request) {
+  const url = new URL(request.url);
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
-  console.log('id', id);
   if (!id) {
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });
   }
@@ -92,7 +89,7 @@ export const PUT = orgIdMiddleware(async (req: Request) => {
       );
     }
 
-    const body: UpdateFileBody = await req.json();
+    const body: UpdateFileBody = await request.json();
 
     // 更新対象のフィールドを抽出
     const updateData: Prisma.FileUpdateInput = {
@@ -149,4 +146,4 @@ export const PUT = orgIdMiddleware(async (req: Request) => {
       { status: 500 }
     );
   }
-});
+}

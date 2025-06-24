@@ -88,7 +88,6 @@ export default function PartnerRegisterDialog({ open, onClose }: PartnerRegister
         throw new Error('法人情報の取得に失敗しました');
       }
       const data = await response.json();
-      console.log('法人情報:', data);
       // 取得した名称(corporateNumberInfo.name)をdisplayNameとofficialNameとocrNameに設定
       setFormData({
         ...formData,
@@ -170,7 +169,6 @@ export default function PartnerRegisterDialog({ open, onClose }: PartnerRegister
       }
 
       const result = await response.json();
-      console.log('登録成功:', result);
       onClose();
     } catch (error) {
       console.error(error);

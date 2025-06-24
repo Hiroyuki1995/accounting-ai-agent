@@ -121,10 +121,7 @@ const worker = new Worker(
       config: config,
     });
 
-    console.log("抽出結果:\n", response.text);
-    console.log(`Processing job ${job.id} for file ID ${job.data.fileId}`);
     const json = JSON.parse(response.text || '{}');
-    console.log(json);
 
 
     // ファイルステータスを「要確認」に更新し、抽出結果を保存
@@ -145,7 +142,6 @@ const worker = new Worker(
           total_amount: json.total_amount ? BigInt(json.total_amount) : null,
         },
       });
-      console.log(`File ID ${fileId} status updated to '要確認' and data saved.`);
     } catch (error) {
       console.error(error);
       // エラー処理 (リトライなど BullMQの機能で可能)
@@ -156,7 +152,7 @@ const worker = new Worker(
 );
 
 worker.on('completed', job => {
-  console.log(`Job ${job.id} completed`);
+  console.debug(`Job ${job.id} completed`);
 });
 
 worker.on('failed', (job, err) => {
@@ -164,7 +160,7 @@ worker.on('failed', (job, err) => {
 });
 
 // ワーカーの開始 (このファイルをimportすれば自動で開始される)
-console.log('File processing worker started.');
+console.debug('File processing worker started.');
 
 // Next.js開発モードでのホットリロード対策 (任意)
 if (process.env.NODE_ENV === 'development') {

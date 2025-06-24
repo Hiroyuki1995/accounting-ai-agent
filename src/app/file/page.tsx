@@ -44,7 +44,6 @@ export default function FileListPage() {
       const response = await fetch('/api/files');
       if (response.ok) {
         const data: FileApiResponse = await response.json();
-        console.log('API Response data:', data);
         let currentPollingNeeded = false;
 
         const newProcessedFiles: FileItem[] = data.map(f => {
@@ -62,7 +61,6 @@ export default function FileListPage() {
             total_amount: f.total_amount?.toString(),
           };
         });
-        console.log('New Processed Files:', newProcessedFiles);
         setProcessedFiles(newProcessedFiles);
 
         setUploadedFiles(prevUploaded => {
@@ -140,7 +138,6 @@ export default function FileListPage() {
   };
 
   const allFiles = [...uploadedFiles, ...processedFiles];
-  console.log('All files for DataGrid:', allFiles);
 
   const columns: GridColDef<FileItem>[] = [
     {

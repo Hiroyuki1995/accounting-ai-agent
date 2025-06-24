@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request,context: any) {
-  const bankCode = context.params.bankCode;
-  console.log('bankCode', bankCode);
-
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const bankCode = url.pathname.split('/').slice(-2, -1)[0]; // URLからbankCodeを取得
   if (!bankCode) {
     return NextResponse.json({ error: '銀行コードが指定されていません' }, { status: 400 });
   }

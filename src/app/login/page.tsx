@@ -12,7 +12,6 @@ export default function LoginPage() {
     // ) : (
     <LoginForm onLoginSuccess={() => {
       // ログイン成功後の処理（例: /files へのリダイレクト）
-      console.log('Login successful, redirecting...');
       // TODO: /files へのリダイレクト処理を追加
       window.location.href = '/file'; // 例として直接リダイレクト
     }} />

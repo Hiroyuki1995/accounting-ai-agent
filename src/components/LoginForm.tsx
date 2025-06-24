@@ -23,7 +23,6 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     }
     setError('');
     onLoginSuccess();
-    console.log('Attempting login with:', { loginId, password });
   };
 
   return (

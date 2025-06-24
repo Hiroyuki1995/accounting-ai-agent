@@ -1,5 +1,5 @@
+import { getUserData } from '@/lib/authSession';
 import prisma from '@/lib/prisma';
-import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { NextResponse } from 'next/server';
 
 // BigIntをJSONにシリアライズできるようにする
@@ -13,9 +13,12 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-export const GET = orgIdMiddleware(async (request: Request) => {
-  const orgId = (request as any).orgId;
-  console.log('orgId', orgId);
+export async function GET(request: Request) {
+  const userData = await getUserData();
+  const orgId = userData?.org_id;
+  if (!orgId) {
+    return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+  }
   try {
     const files = await prisma.file.findMany({
       where: { orgId },
@@ -32,4 +35,4 @@ export const GET = orgIdMiddleware(async (request: Request) => {
       { status: 500 }
     );
   }
-});
+}

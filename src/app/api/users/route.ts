@@ -1,19 +1,17 @@
-import { getManagementApiToken } from '@/lib/auth0';
-import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
-import { ManagementClient } from 'auth0';
+import { getAuth0ManagementClient } from '@/lib/auth0';
+import { getUserData } from '@/lib/authSession';
 import { NextResponse } from 'next/server';
 
-export const GET = orgIdMiddleware(async (request: Request) => {
+export async function GET(request: Request) {
   try {
-    const token = await getManagementApiToken();
-    const auth0 = new ManagementClient({
-      domain: process.env.AUTH0_DOMAIN || '',
-      token: token,
-    });
-    const orgId = (request as any).orgId;
-    console.log('orgId', orgId);
+    const userData = await getUserData();
+    const orgId = userData?.org_id;
+    if (!orgId) {
+      return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+    }
 
-    const users = await auth0.users.getAll({
+    const auth0Management = await getAuth0ManagementClient();
+    const users = await auth0Management.users.getAll({
       q: `app_metadata.org_id:"${orgId}"`,
     });
 
@@ -22,4 +20,4 @@ export const GET = orgIdMiddleware(async (request: Request) => {
     console.error('Error fetching users from Auth0:', error);
     return NextResponse.json({ error: 'ユーザー一覧の取得に失敗しました' }, { status: 500 });
   }
-});
+}

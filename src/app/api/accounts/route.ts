@@ -1,11 +1,15 @@
+import { getUserData } from '@/lib/authSession';
 import prisma from '@/lib/prisma';
-import { orgIdMiddleware } from '@/middleware/orgIdMiddleware';
 import { NextResponse } from 'next/server';
 
 // 口座登録
-export const POST = orgIdMiddleware(async (req: Request) => {
-  const { alias, bank, branch, type, number, holder } = await req.json();
-  const orgId = (req as any).orgId;
+export async function POST(request: Request) {
+  const { alias, bank, branch, type, number, holder } = await request.json();
+  const userData = await getUserData();
+  const orgId = userData?.org_id;
+  if (!orgId) {
+    return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+  }
     try {
       const newAccount = await prisma.account.create({
         data: {
@@ -22,11 +26,15 @@ export const POST = orgIdMiddleware(async (req: Request) => {
     } catch (error) {
       return NextResponse.json({ error: 'ユーザー登録に失敗しました' }, { status: 500 });
     }
-})
+  }
 
 // 口座取得
-export const GET = orgIdMiddleware(async (request: Request) => {
-  const orgId = (request as any).orgId;
+export async function GET(request: Request) {
+  const userData = await getUserData();
+  const orgId = userData?.org_id;
+  if (!orgId) {
+    return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
+  }
   try {
     const accounts = await prisma.account.findMany({
       where: { orgId },
@@ -35,4 +43,4 @@ export const GET = orgIdMiddleware(async (request: Request) => {
   } catch (error) {
     return NextResponse.json({ error: '口座情報の取得に失敗しました' }, { status: 500 });
   }
-});
+}
