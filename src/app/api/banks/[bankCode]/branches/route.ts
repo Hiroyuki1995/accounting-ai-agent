@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export const GET = withAuth(async (req: NextRequest, user: AuthUser) => {
   const url = new URL(req.url);
   const bankCode = url.pathname.split('/').slice(-2, -1)[0]; // URLからbankCodeを取得
   if (!bankCode) {
@@ -22,4 +23,4 @@ export async function GET(req: Request) {
     console.error(error);
     return NextResponse.json({ error: 'データの取得に失敗しました' }, { status: 500 });
   }
-} 
+});

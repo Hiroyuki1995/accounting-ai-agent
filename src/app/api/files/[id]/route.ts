@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
 import { Prisma } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface UpdateFileBody {
   issuer_name?: string | null;
@@ -15,7 +16,7 @@ interface UpdateFileBody {
   total_amount?: string | null;
 }
 
-export async function GET(request: Request) {
+export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
   const url = new URL(request.url);
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
@@ -71,9 +72,9 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(request: Request) {
+export const PUT = withAuth(async (request: NextRequest, user: AuthUser) => {
   const url = new URL(request.url);
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
@@ -92,7 +93,7 @@ export async function PUT(request: Request) {
     const body: UpdateFileBody = await request.json();
 
     // 更新対象のフィールドを抽出
-    const updateData: Prisma.FileUpdateInput = {
+    const updateData: Prisma.FileUpdateInput = { //TODO:修正
         status: '確認済み',
     };
 
@@ -146,4 +147,4 @@ export async function PUT(request: Request) {
       { status: 500 }
     );
   }
-}
+});

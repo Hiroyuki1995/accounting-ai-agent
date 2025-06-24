@@ -1,14 +1,13 @@
-import { getUserData } from '@/lib/authSession';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
 import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, user: AuthUser) => {
   try {
     const { partnerData, bankAccounts } = await request.json();
-    const userData = await getUserData();
-    const orgId = userData?.org_id;
+    const orgId = user.org_id;
     if (!orgId) {
       return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
     }
@@ -28,11 +27,10 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json({ error: '取引先の登録に失敗しました' }, { status: 500 });
   }
-}
+});
 
-export async function GET(request: Request) {
-  const userData = await getUserData();
-  const orgId = userData?.org_id;
+export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
+  const orgId = user.org_id;
   if (!orgId) {
     return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
   }
@@ -48,4 +46,4 @@ export async function GET(request: Request) {
     console.error(error);
     return NextResponse.json({ error: '取引先データの取得に失敗しました' }, { status: 500 });
   }
-}
+});

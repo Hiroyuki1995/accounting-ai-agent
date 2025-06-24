@@ -43,14 +43,11 @@ model File {
   @@map("files")
 }
 
+// Auth0にてサインアップがされたときにinsertする。
 model User {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  department String
-  role       UserRole // ADMIN:管理者権限, STAFF:担当者権限
-  created_at DateTime @default(now())
-  orgId      String   // 組織ID
+  sub     String  @id
+  org_id  String
+  api_key String? @unique // null許容のString型。存在する場合はunique
 }
 
 model Account {

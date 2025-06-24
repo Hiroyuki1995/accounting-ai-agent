@@ -1,8 +1,9 @@
 import prisma from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
 // 法人情報取得
-export async function GET(req: Request) {
+export const GET = withAuth(async (req: NextRequest, user: AuthUser) => {
   const { searchParams } = new URL(req.url);
   const corporateNumber = searchParams.get('corporateNumber');
 
@@ -31,4 +32,4 @@ export async function GET(req: Request) {
   } catch (error) {
     return NextResponse.json({ error: '法人情報の取得に失敗しました' }, { status: 500 });
   }
-} 
+});

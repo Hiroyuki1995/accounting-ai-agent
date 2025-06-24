@@ -1,7 +1,8 @@
 import { getAuth0ManagementClient } from '@/lib/auth0';
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(req: Request) {
+export const PUT = withAuth(async (req: NextRequest, user: AuthUser) => {
   try {
     const url = new URL(req.url);
     const id = decodeURIComponent(url.pathname.split('/').pop() || ''); // URLからIDを取得
@@ -29,4 +30,4 @@ export async function PUT(req: Request) {
     console.error(error);
     return NextResponse.json({ error: 'ユーザー更新に失敗しました' }, { status: 500 });
   }
-}
+});

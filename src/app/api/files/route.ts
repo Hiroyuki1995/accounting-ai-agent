@@ -1,6 +1,6 @@
-import { getUserData } from '@/lib/authSession';
 import prisma from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
 // BigIntをJSONにシリアライズできるようにする
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/BigInt/toJSON
@@ -13,9 +13,8 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-export async function GET(request: Request) {
-  const userData = await getUserData();
-  const orgId = userData?.org_id;
+export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
+  const orgId = user.org_id;
   if (!orgId) {
     return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
   }
@@ -35,4 +34,4 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-}
+});

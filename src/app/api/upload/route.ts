@@ -2,9 +2,9 @@ import prisma from '@/lib/prisma';
 
 import { addFileProcessingJob } from '@/lib/queue';
 // import { writeFile } from 'fs/promises'; // ローカルファイル保存は不要になるため削除
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 // import { join } from 'path'; // ローカルファイル保存は不要になるため削除
-import { getUserData } from '@/lib/authSession';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
 import { CreateBucketCommand, ListBucketsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'; // S3クライアントをインポート
 import { v4 as uuidv4 } from 'uuid'; // uuidv4をインポート
 
@@ -40,12 +40,11 @@ async function ensureBucketExists(bucketName: string) {
   }
 }
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, user: AuthUser) => {
   try {
     // バケットの存在を確認・作成
     await ensureBucketExists(MINIO_BUCKET_NAME);
-    const userData = await getUserData();
-    const orgId = userData?.org_id;
+    const orgId = user.org_id;
     if (!orgId) {
       return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
     }
@@ -124,4 +123,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+});

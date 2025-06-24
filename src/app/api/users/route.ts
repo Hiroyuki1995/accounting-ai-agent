@@ -1,11 +1,10 @@
 import { getAuth0ManagementClient } from '@/lib/auth0';
-import { getUserData } from '@/lib/authSession';
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
   try {
-    const userData = await getUserData();
-    const orgId = userData?.org_id;
+    const orgId = user.org_id;
     if (!orgId) {
       return NextResponse.json({ error: 'ユーザー情報の取得に失敗しました' }, { status: 500 });
     }
@@ -20,4 +19,4 @@ export async function GET(request: Request) {
     console.error('Error fetching users from Auth0:', error);
     return NextResponse.json({ error: 'ユーザー一覧の取得に失敗しました' }, { status: 500 });
   }
-}
+});

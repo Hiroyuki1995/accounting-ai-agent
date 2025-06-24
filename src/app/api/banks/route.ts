@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { AuthUser, withAuth } from '@/middleware/withAuth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
   try {
     // クエリとして環境変数のapiKeyおよびlimit=2000を追加
     const apiKey = process.env.BANKCODEJP_API_KEY;
@@ -17,4 +18,4 @@ export async function GET() {
     console.error(error);
     return NextResponse.json({ error: 'データの取得に失敗しました' }, { status: 500 });
   }
-} 
+});
