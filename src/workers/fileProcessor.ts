@@ -116,7 +116,7 @@ const worker = new Worker(
     };
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash", // 1.5-flashでは、503エラーが発生することがある
       contents: contents,
       config: config,
     });

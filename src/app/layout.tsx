@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch the user session to request /auth/profile
+  // request /auth/profile to fetch the user session
   const session = await auth0.getSession();
 
   // If no session, show sign-up and login buttons

@@ -48,6 +48,7 @@ model User {
   sub     String  @id
   org_id  String
   api_key String? @unique // null許容のString型。存在する場合はunique
+  role    UserRole
 }
 
 model Account {
@@ -74,8 +75,8 @@ model Partner {
   address                     String?
   closingDate                 Int?
   feeType                     FeeType?
-  bankAccounts                BankAccount[]
   orgId                       String    // 組織ID
+  bankAccounts                BankAccount[]
 }
 
 enum CorporateType {
@@ -98,7 +99,6 @@ model BankAccount {
   accountHolder String
   partnerId   Int
   Partner     Partner  @relation(fields: [partnerId], references: [id])
-  orgId       String   // 組織ID
 }
 
 // インボイス番号検索のデータベース
@@ -154,3 +154,10 @@ model CorporationNumberInfo {
   furigana                String?  // フリガナ
   hihyoji                 Int      // 検索対象除外
 }
+
+INSERT INTO "User" ("sub", "org_id", "api_key", "role") VALUES
+('auth0|6859529baed1252f259192cc', 'org_gAZ2AlXKM3CLaBIw', gen_random_uuid()::text, 'ADMIN'), 
+('auth0|6858e77faed1252f2591827b', 'org_gAZ2AlXKM3CLaBIw', gen_random_uuid()::text, 'ADMIN'), 
+('auth0|6858f377009f76c90b9c9649', 'org_PV53WLL1YfxTP4Fw', gen_random_uuid()::text, 'ADMIN'), 
+('auth0|68594fc0009f76c90b9ca4ca', 'org_gAZ2AlXKM3CLaBIw', gen_random_uuid()::text, 'ADMIN'), 
+('auth0|6859521c009f76c90b9ca546', 'org_gAZ2AlXKM3CLaBIw', gen_random_uuid()::text, 'ADMIN');

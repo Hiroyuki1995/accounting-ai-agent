@@ -1,3 +1,4 @@
+// Edge runtimeで動いている
 import { NextRequest, NextResponse } from "next/server";
 import { auth0 } from "./lib/auth0";
 
@@ -17,7 +18,6 @@ export async function middleware(request: NextRequest) {
     // APIリクエスト時の処理
     try {
       const session = await auth0.getSession();
-      // console.log('session', session);
       const response = NextResponse.next();
       // Auth0のセッション情報がある場合
       if (session?.user && session.user.sub && session.user.org_id) {

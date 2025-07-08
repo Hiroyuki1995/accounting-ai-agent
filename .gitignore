@@ -46,3 +46,5 @@ next-env.d.ts
 /postgres-data
 /redis-data
 /prisma/migration_master_data
+
+/mcp-server/node_modules

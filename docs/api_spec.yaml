@@ -1,0 +1,744 @@
+openapi: 3.1.0
+info:
+  title: Accounts API
+  description: API for managing bank accounts
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /banks:
+    get:
+      operationId: "getBankInfo"
+      summary: "銀行情報の取得"
+      description: "外部APIを使用してすべての銀行情報を取得します。"
+      parameters:
+        - name: apiKey
+          in: query
+          required: true
+          description: "外部APIの認証に使用するAPIキー"
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: "取得するデータの最大数"
+          schema:
+            type: integer
+            default: 2000
+      responses:
+        "200":
+          description: "銀行情報の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    bankCode:
+                      type: string
+                      description: "銀行コード"
+                    bankName:
+                      type: string
+                      description: "銀行名"
+        "500":
+          description: "データの取得に失敗しました"
+  /accounts:
+    post:
+      operationId: "registerAccount"
+      summary: "自社口座登録"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alias:
+                  type: string
+                  description: "口座の別名"
+                bank:
+                  type: string
+                  description: "銀行名"
+                branch:
+                  type: string
+                  description: "支店名"
+                type:
+                  type: string
+                  description: "預金種目"
+                number:
+                  type: string
+                  description: "口座番号"
+                holder:
+                  type: string
+                  description: "口座名義人"
+      responses:
+        "201":
+          description: "口座が正常に登録されました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  alias:
+                    type: string
+                  bank:
+                    type: string
+                  branch:
+                    type: string
+                  type:
+                    type: string
+                  number:
+                    type: string
+                  holder:
+                    type: string
+                  orgId:
+                    type: string
+        "500":
+          description: "ユーザー登録に失敗しました"
+    get:
+      operationId: "getAccountList"
+      summary: "自社口座一覧取得"
+      responses:
+        "200":
+          description: "口座情報の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    alias:
+                      type: string
+                    bank:
+                      type: string
+                    branch:
+                      type: string
+                    type:
+                      type: string
+                    number:
+                      type: string
+                    holder:
+                      type: string
+                    orgId:
+                      type: string
+        "500":
+          description: "口座情報の取得に失敗しました"
+  /banks/{bankCode}/branches:
+    get:
+      operationId: "getBranchInfo"
+      summary: "支店情報の取得"
+      description: "指定された銀行コードに紐づく全ての支店情報を取得します。"
+      parameters:
+        - name: bankCode
+          in: path
+          required: true
+          description: "銀行コード"
+          schema:
+            type: string
+        - name: apiKey
+          in: query
+          required: true
+          description: "外部APIの認証に使用するAPIキー"
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: "取得するデータの最大数"
+          schema:
+            type: integer
+            default: 2000
+      responses:
+        "200":
+          description: "支店情報の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    branchCode:
+                      type: string
+                      description: "支店コード"
+                    branchName:
+                      type: string
+                      description: "支店名"
+        "400":
+          description: "銀行コードが指定されていません"
+        "500":
+          description: "データの取得に失敗しました"
+  /corporation:
+    get:
+      operationId: "getCorporationInfo"
+      summary: "適格請求書登録番号に紐づく法人情報の取得"
+      description: "指定された適格請求書登録番号に紐づく法人情報を取得します。"
+      parameters:
+        - name: corporateNumber
+          in: query
+          required: true
+          description: "法人の登録番号"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "法人情報の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  corporateInvoiceInfo:
+                    type: object
+                    description: "法人の請求情報"
+                  corporateNumberInfo:
+                    type: object
+                    description: "法人番号情報"
+        "400":
+          description: "登録番号が指定されていません"
+        "404":
+          description: "法人情報が見つかりません"
+        "500":
+          description: "法人情報の取得に失敗しました"
+  /files:
+    get:
+      operationId: "getFileList"
+      summary: "アップロードした書類ファイル一覧の取得"
+      description: "組織IDに紐づくアップロードした書類ファイルの一覧を取得します。"
+      responses:
+        "200":
+          description: "ファイル一覧の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "ファイルID"
+                    file_name:
+                      type: string
+                      description: "ファイル名"
+                    uploaded_at:
+                      type: string
+                      format: date-time
+                      description: "アップロード日時"
+                    status:
+                      type: string
+                      description: "ファイルのステータス"
+                      enum:
+                        - "処理中"
+                        - "要確認"
+                        - "確定済み"
+                    object_key:
+                      type: string
+                      description: "オブジェクトキー"
+                    orgId:
+                      type: string
+                      description: "組織ID"
+        "500":
+          description: "ファイル一覧の取得に失敗しました。"
+    post:
+      operationId: "uploadAndOcrFile"
+      summary: "書類ファイルのアップロードおよびAIOCRによる読み取り"
+      description: "アップロードした書類ファイルをAIOCRで読み取った結果を返却する"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_name:
+                  type: string
+                  description: "ファイル名"
+                object_key:
+                  type: string
+                  description: "オブジェクトキー"
+                status:
+                  type: string
+                  description: "ファイルのステータス"
+                  enum:
+                    - "処理中"
+                    - "要確認"
+                    - "確定済み"
+                orgId:
+                  type: string
+                  description: "組織ID"
+                issuer_name:
+                  type: string
+                  description: "発行者名"
+                invoice_date:
+                  type: string
+                  format: date
+                  description: "請求日"
+                registration_number:
+                  type: string
+                  description: "登録番号"
+                tax_8_base:
+                  type: string
+                  description: "税8%の基礎"
+                tax_8_amount:
+                  type: string
+                  description: "税8%の金額"
+                tax_8_total:
+                  type: string
+                  description: "税8%の合計"
+                tax_10_base:
+                  type: string
+                  description: "税10%の基礎"
+                tax_10_amount:
+                  type: string
+                  description: "税10%の金額"
+                tax_10_total:
+                  type: string
+                  description: "税10%の合計"
+                total_amount:
+                  type: string
+                  description: "合計金額"
+      responses:
+        "201":
+          description: "ファイル情報の登録に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "ファイルID"
+                  file_name:
+                    type: string
+                    description: "ファイル名"
+                  uploaded_at:
+                    type: string
+                    format: date-time
+                    description: "アップロード日時"
+                  status:
+                    type: string
+                    description: "ファイルのステータス"
+                  object_key:
+                    type: string
+                    description: "オブジェクトキー"
+                  orgId:
+                    type: string
+                    description: "組織ID"
+                  issuer_name:
+                    type: string
+                    description: "発行者名"
+                  invoice_date:
+                    type: string
+                    format: date
+                    description: "請求日"
+                  registration_number:
+                    type: string
+                    description: "登録番号"
+                  tax_8_base:
+                    type: string
+                    description: "税8%の基礎"
+                  tax_8_amount:
+                    type: string
+                    description: "税8%の金額"
+                  tax_8_total:
+                    type: string
+                    description: "税8%の合計"
+                  tax_10_base:
+                    type: string
+                    description: "税10%の基礎"
+                  tax_10_amount:
+                    type: string
+                    description: "税10%の金額"
+                  tax_10_total:
+                    type: string
+                    description: "税10%の合計"
+                  total_amount:
+                    type: string
+                    description: "合計金額"
+        "400":
+          description: "リクエストが不正です。"
+        "500":
+          description: "ファイル情報の登録に失敗しました。"
+  /files/{id}:
+    get:
+      operationId: "getFileDetail"
+      summary: "書類ファイル詳細情報の取得"
+      description: "指定された書類ファイルIDに紐づく書類ファイルの詳細情報を取得します。"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ファイルID"
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "ファイル詳細の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "ファイルID"
+                  file_name:
+                    type: string
+                    description: "ファイル名"
+                  uploaded_at:
+                    type: string
+                    format: date-time
+                    description: "アップロード日時"
+                  status:
+                    type: string
+                    description: "ファイルのステータス"
+                  object_key:
+                    type: string
+                    description: "オブジェクトキー"
+                  issuer_name:
+                    type: string
+                    description: "発行者名"
+                  invoice_date:
+                    type: string
+                    format: date
+                    description: "請求日"
+                  registration_number:
+                    type: string
+                    description: "登録番号"
+                  tax_8_base:
+                    type: string
+                    description: "税8%の基礎"
+                  tax_8_amount:
+                    type: string
+                    description: "税8%の金額"
+                  tax_8_total:
+                    type: string
+                    description: "税8%の合計"
+                  tax_10_base:
+                    type: string
+                    description: "税10%の基礎"
+                  tax_10_amount:
+                    type: string
+                    description: "税10%の金額"
+                  tax_10_total:
+                    type: string
+                    description: "税10%の合計"
+                  total_amount:
+                    type: string
+                    description: "合計金額"
+        "400":
+          description: "無効なファイルIDです。"
+        "404":
+          description: "ファイルが見つかりませんでした。"
+        "500":
+          description: "ファイル詳細の取得に失敗しました。"
+    put:
+      operationId: "updateFileInfo"
+      summary: "書類ファイル情報の更新"
+      description: "指定された書類ファイルIDに基づいて書類ファイルの情報を更新します。"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ファイルID"
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issuer_name:
+                  type: string
+                  description: "発行者名"
+                invoice_date:
+                  type: string
+                  format: date
+                  description: "請求日"
+                registration_number:
+                  type: string
+                  description: "登録番号"
+                tax_8_base:
+                  type: string
+                  description: "税8%の基礎"
+                tax_8_amount:
+                  type: string
+                  description: "税8%の金額"
+                tax_8_total:
+                  type: string
+                  description: "税8%の合計"
+                tax_10_base:
+                  type: string
+                  description: "税10%の基礎"
+                tax_10_amount:
+                  type: string
+                  description: "税10%の金額"
+                tax_10_total:
+                  type: string
+                  description: "税10%の合計"
+                total_amount:
+                  type: string
+                  description: "合計金額"
+      responses:
+        "200":
+          description: "ファイル情報の更新に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "ファイルID"
+                  file_name:
+                    type: string
+                    description: "ファイル名"
+                  uploaded_at:
+                    type: string
+                    format: date-time
+                    description: "アップロード日時"
+                  status:
+                    type: string
+                    description: "ファイルのステータス"
+                  object_key:
+                    type: string
+                    description: "オブジェクトキー"
+                  issuer_name:
+                    type: string
+                    description: "発行者名"
+                  invoice_date:
+                    type: string
+                    format: date
+                    description: "請求日"
+                  registration_number:
+                    type: string
+                    description: "登録番号"
+                  tax_8_base:
+                    type: string
+                    description: "税8%の基礎"
+                  tax_8_amount:
+                    type: string
+                    description: "税8%の金額"
+                  tax_8_total:
+                    type: string
+                    description: "税8%の合計"
+                  tax_10_base:
+                    type: string
+                    description: "税10%の基礎"
+                  tax_10_amount:
+                    type: string
+                    description: "税10%の金額"
+                  tax_10_total:
+                    type: string
+                    description: "税10%の合計"
+                  total_amount:
+                    type: string
+                    description: "合計金額"
+        "400":
+          description: "無効なファイルIDです。"
+        "404":
+          description: "ファイルの更新に失敗しました。"
+        "500":
+          description: "ファイル情報の更新に失敗しました。"
+  /users:
+    get:
+      operationId: "getUserList"
+      summary: "自社ユーザー一覧の取得"
+      description: "組織IDに紐づく自社ユーザー一覧を取得します。"
+      responses:
+        "200":
+          description: "ユーザー一覧の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: string
+                      description: "ユーザーID"
+                    name:
+                      type: string
+                      description: "ユーザー名"
+                    email:
+                      type: string
+                      description: "メールアドレス"
+                    department:
+                      type: string
+                      description: "部署"
+                    role:
+                      type: string
+                      description: "役割"
+        "500":
+          description: "ユーザー一覧の取得に失敗しました"
+  /users/{id}:
+    put:
+      operationId: "updateUserInfo"
+      summary: "自社ユーザー情報の更新"
+      description: "指定された自社ユーザーIDの情報を更新します。"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ユーザーID"
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "ユーザー名"
+                email:
+                  type: string
+                  description: "メールアドレス"
+                app_metadata:
+                  type: object
+                  properties:
+                    department:
+                      type: string
+                      description: "部署"
+                    role:
+                      type: string
+                      description: "役割"
+      responses:
+        "200":
+          description: "ユーザー情報の更新に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    description: "ユーザーID"
+                  name:
+                    type: string
+                    description: "ユーザー名"
+                  email:
+                    type: string
+                    description: "メールアドレス"
+                  department:
+                    type: string
+                    description: "部署"
+                  role:
+                    type: string
+                    description: "役割"
+        "400":
+          description: "不正なIDです"
+        "500":
+          description: "ユーザー更新に失敗しました"
+  /partners:
+    post:
+      operationId: "registerPartner"
+      summary: "取引先の登録"
+      description: "新しい取引先を登録します。"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                partnerData:
+                  type: object
+                  description: "取引先データ"
+                bankAccounts:
+                  type: array
+                  items:
+                    type: object
+                    description: "銀行口座情報"
+      responses:
+        "201":
+          description: "取引先の登録に成功しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "取引先ID"
+                  displayName:
+                    type: string
+                    description: "表示名"
+                  orgId:
+                    type: string
+                    description: "組織ID"
+        "500":
+          description: "取引先の登録に失敗しました"
+    get:
+      operationId: "getPartnerList"
+      summary: "取引先一覧の取得"
+      description: "組織IDに紐づく取引先一覧を取得します。"
+      responses:
+        "200":
+          description: "取引先一覧の取得に成功しました"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "取引先ID"
+                    displayName:
+                      type: string
+                      description: "表示名"
+                    orgId:
+                      type: string
+                      description: "組織ID"
+        "500":
+          description: "取引先データの取得に失敗しました"
+  /upload:
+    post:
+      operationId: "uploadDocument"
+      summary: "書類ファイルのアップロード"
+      description: "PDF形式の書類ファイルをアップロードし、AIOCRによる読取処理を開始します。"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "アップロードするPDFファイル"
+      responses:
+        "200":
+          description: "ファイルのアップロードが完了しました"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: "成功メッセージ"
+                  files:
+                    type: array
+                    items:
+                      type: string
+                      description: "アップロードされたファイル名"
+        "400":
+          description: "ファイルが見つかりません。"
+        "500":
+          description: "ファイルのアップロード中にエラーが発生しました。"
