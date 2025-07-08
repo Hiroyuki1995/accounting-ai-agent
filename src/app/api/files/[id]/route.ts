@@ -76,6 +76,7 @@ export const GET = withAuth(async (request: NextRequest, user: AuthUser) => {
 
 export const PUT = withAuth(async (request: NextRequest, user: AuthUser) => {
   const url = new URL(request.url);
+  const isConfirm: boolean = url.searchParams.get('isConfirm') === 'true';
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1]; // パスからidを取得
   if (!id) {
@@ -94,7 +95,7 @@ export const PUT = withAuth(async (request: NextRequest, user: AuthUser) => {
 
     // 更新対象のフィールドを抽出
     const updateData: Prisma.FileUpdateInput = { //TODO:修正
-        status: '確認済み',
+        status: isConfirm ? '確定済み' : '一時保存中',
     };
 
     if (body.issuer_name !== undefined) updateData.issuer_name = body.issuer_name;

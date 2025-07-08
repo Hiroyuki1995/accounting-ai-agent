@@ -85,15 +85,18 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
     });
   };
 
-  // 更新ボタンのハンドラ
-  const handleUpdate = async () => {
+  // フォームが非活性かどうかを判定
+  const isFormDisabled = editableFileData?.status === '確定済み';
+
+  // 一時保存ボタンのハンドラ
+  const handleUpdate = async (isConfirm: boolean = false) => {
     if (!editableFileData) return;
 
     setIsUpdating(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/files/${fileId}`, {
+      const response = await fetch(`/api/files/${fileId}?isConfirm=${isConfirm}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -162,6 +165,11 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isResizing, handleMouseMove, handleMouseUp]);
+
+  // 確定ボタンのクリックハンドラ
+  const handleConfirm = () => {
+    handleUpdate(true);
+  };
 
   if (loading) {
     return (
@@ -258,7 +266,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
             maxWidth: { xs: '100%', md: '80%' }, // レスポンシブ最大幅
           }}
         >
-          <Typography variant="h6" component="h2" gutterBottom>入力フォーム</Typography>
+          <Typography variant="h6" component="h2" gutterBottom>書類情報</Typography>
           <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
             <TextField
               fullWidth
@@ -269,6 +277,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
               value={editableFileData.issuer_name || ''}
               onChange={handleChange}
               sx={{ flex: 1, minWidth: { xs: '100%', md: '200px' } }}
+              disabled={isFormDisabled}
             />
             <TextField
               fullWidth
@@ -279,6 +288,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
               value={editableFileData.registration_number || ''}
               onChange={handleChange}
               sx={{ flex: 1, minWidth: { xs: '100%', md: '200px' } }}
+              disabled={isFormDisabled}
             />
           </Box>
 
@@ -292,6 +302,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
             value={editableFileData.invoice_date ? editableFileData.invoice_date.split('T')[0] : ''} // YYYY-MM-DD 形式に整形
             onChange={handleChange}
             sx={{ mb: 2 }}
+            disabled={isFormDisabled}
           />
 
           <Box sx={{ mb: 3 }}>
@@ -306,6 +317,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_8_base !== null ? editableFileData.tax_8_base?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
               <TextField
                 label="税額"
@@ -316,6 +328,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_8_amount !== null ? editableFileData.tax_8_amount?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
               <TextField
                 label="税込金額"
@@ -326,6 +339,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_8_total !== null ? editableFileData.tax_8_total?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
             </Box>
           </Box>
@@ -342,6 +356,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_10_base !== null ? editableFileData.tax_10_base?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
               <TextField
                 label="税額"
@@ -352,6 +367,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_10_amount !== null ? editableFileData.tax_10_amount?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
               <TextField
                 label="税込金額"
@@ -362,6 +378,7 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
                 value={editableFileData.tax_10_total !== null ? editableFileData.tax_10_total?.toString() : ''}
                 onChange={handleChange}
                 sx={{ flex: '1 1 30%', minWidth: '90px' }}
+                disabled={isFormDisabled}
               />
             </Box>
           </Box>
@@ -377,18 +394,33 @@ export default function FileDetailPage({ params }: FileDetailPageProps) {
             value={editableFileData.total_amount !== null ? editableFileData.total_amount?.toString() : ''}
             onChange={handleChange}
             sx={{ mb: 2 }}
+            disabled={isFormDisabled}
           />
 
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleUpdate}
-            disabled={isUpdating}
-            sx={{ mt: 2 }}
-          >
-            {isUpdating ? <CircularProgress size={24} color="inherit" /> : '更新'}
-          </Button>
+          {!isFormDisabled && (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleUpdate}
+                disabled={isUpdating}
+                sx={{ mt: 2 }}
+              >
+                {isUpdating ? <CircularProgress size={24} color="inherit" /> : '一時保存'}
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleConfirm}
+                disabled={isUpdating}
+                sx={{ mt: 2, ml: 1 }}
+              >
+                確定
+              </Button>
+            </>
+          )}
           {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
         </Paper>
       </Box>
